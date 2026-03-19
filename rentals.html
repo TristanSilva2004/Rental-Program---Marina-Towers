@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Residences — Marina Towers Private Rental Program</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .rentals-page { padding-top: var(--nav-height); }
+
+    /* Hero */
+    .rentals-hero {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 56px 0 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .rentals-hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 200px;
+      background: radial-gradient(ellipse, rgba(201,169,110,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .rentals-hero-inner {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 32px;
+    }
+    .rentals-hero h1 { font-size: clamp(32px, 4vw, 52px); font-weight: 300; margin-bottom: 10px; }
+    .rentals-hero p { font-size: 15px; color: var(--text-secondary); max-width: 480px; line-height: 1.7; }
+    .rentals-count { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+    .rentals-count strong { color: var(--gold); font-size: 22px; font-family: var(--font-heading); font-weight: 400; display: block; }
+    @media (max-width: 768px) { .rentals-hero-inner { flex-direction: column; align-items: flex-start; } }
+
+    /* Filters */
+    .filters-bar {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: var(--nav-height);
+      z-index: 100;
+    }
+    .filters-inner {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .filters-inner::-webkit-scrollbar { display: none; }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      padding: 16px 24px;
+      min-width: 160px;
+      border-right: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .filter-group:hover { background: var(--bg-secondary); }
+    .filter-group:last-child { border-right: none; }
+    .filter-label { font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px; }
+    .filter-group select,
+    .filter-group input[type="number"] {
+      background: transparent;
+      border: none;
+      color: var(--text-primary);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+      width: 100%;
+    }
+    .filter-group select option { background: var(--bg-card); }
+    .filters-apply {
+      padding: 16px 24px;
+      flex-shrink: 0;
+    }
+    .filter-reset {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 12px;
+      cursor: pointer;
+      padding: 16px 20px;
+      transition: color 0.2s;
+      flex-shrink: 0;
+    }
+    .filter-reset:hover { color: var(--gold); }
+
+    /* Results */
+    .rentals-body { padding: 48px 0 96px; }
+    .rentals-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 36px;
+    }
+    .results-info { font-size: 14px; color: var(--text-muted); }
+    .results-info strong { color: var(--text-primary); }
+    .sort-group { display: flex; align-items: center; gap: 10px; }
+    .sort-label { font-size: 12px; color: var(--text-muted); }
+    .sort-select {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text-primary);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      outline: none;
+      cursor: pointer;
+    }
+    .sort-select option { background: var(--bg-card); }
+
+    /* Grid */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    @media (max-width: 1100px) { .listings-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .listings-grid { grid-template-columns: 1fr; } }
+
+    /* Card image overlay */
+    .card-img-wrap { position: relative; overflow: hidden; }
+    .card-img-wrap img,
+    .card-img-wrap .card-image-placeholder {
+      transition: transform 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .card:hover .card-img-wrap img,
+    .card:hover .card-img-wrap .card-image-placeholder { transform: scale(1.04); }
+    .card-img-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: rgba(7,9,15,0.85);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--gold-border);
+      color: var(--gold);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    /* Mobile filters toggle */
+    .filters-mobile-toggle {
+      display: none;
+      width: 100%;
+      padding: 16px 20px;
+      background: var(--bg-card);
+      border: none;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-family: var(--font-body);
+      text-align: left;
+      cursor: pointer;
+      align-items: center;
+      gap: 10px;
+    }
+    .filters-content { display: flex; }
+    @media (max-width: 768px) {
+      .filters-mobile-toggle { display: flex; }
+      .filters-content { display: none; flex-direction: column; }
+      .filters-content.open { display: flex; }
+      .filter-group { min-width: unset; width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAVIGATION ══ -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-main">Marina Towers</span>
+        <span class="nav-logo-sub">Private Rental Program</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="rentals.html">Find a Stay</a></li>
+        <li><a href="list-apartment.html" class="nav-cta">List Your Apartment</a></li>
+      </ul>
+      <button class="nav-hamburger" id="navHamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="nav-mobile" id="navMobile">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="rentals.html">Find a Stay</a></li>
+      <li><a href="list-apartment.html">List Your Apartment</a></li>
+    </ul>
+  </div>
+
+  <div class="rentals-page">
+
+    <!-- Hero -->
+    <div class="rentals-hero">
+      <div class="container">
+        <div class="rentals-hero-inner">
+          <div>
+            <p class="eyebrow">Residences</p>
+            <div class="gold-line" style="margin:12px 0;"></div>
+            <h1>Available Residences</h1>
+            <p>Browse our curated selection of Marina Towers residences — each personally approved and ready for exceptional stays.</p>
+          </div>
+          <div class="rentals-count">
+            <strong id="totalCount">—</strong>
+            Residences Available
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-bar">
+      <div class="container" style="padding:0 32px">
+        <button class="filters-mobile-toggle" id="filterToggle">
+          <span>🔍</span> Filters
+        </button>
+        <div class="filters-content" id="filtersContent">
+          <div class="filters-inner">
+            <div class="filter-group">
+              <span class="filter-label">Tower</span>
+              <select id="filterTower">
+                <option value="">All Towers</option>
+                <option value="Tower A">Tower A</option>
+                <option value="Tower B">Tower B</option>
+                <option value="Tower C">Tower C</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Bedrooms</span>
+              <select id="filterBedrooms">
+                <option value="">Any</option>
+                <option value="1">1 Bedroom</option>
+                <option value="2">2 Bedrooms</option>
+                <option value="3">3 Bedrooms</option>
+                <option value="4">4+ Bedrooms</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Guests</span>
+              <select id="filterGuests">
+                <option value="">Any</option>
+                <option value="1">1+</option>
+                <option value="2">2+</option>
+                <option value="4">4+</option>
+                <option value="6">6+</option>
+                <option value="8">8+</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Max Price / Night</span>
+              <input type="number" id="filterMaxPrice" placeholder="Any" min="0" step="50" />
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Check-In</span>
+              <input type="date" id="filterCheckIn" style="background:transparent;border:none;color:var(--text-primary);font-size:13px;outline:none;cursor:pointer;font-family:var(--font-body);width:100%" />
+            </div>
+            <div class="filter-group">
+              <span class="filter-label">Check-Out</span>
+              <input type="date" id="filterCheckOut" style="background:transparent;border:none;color:var(--text-primary);font-size:13px;outline:none;cursor:pointer;font-family:var(--font-body);width:100%" />
+            </div>
+            <div class="filters-apply">
+              <button class="btn btn-primary btn-sm" id="applyFilters">Search</button>
+            </div>
+            <button class="filter-reset" id="resetFilters">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="rentals-body">
+      <div class="container">
+        <div class="rentals-toolbar">
+          <p class="results-info" id="resultsInfo"></p>
+          <div class="sort-group">
+            <span class="sort-label">Sort:</span>
+            <select class="sort-select" id="sortSelect">
+              <option value="default">Featured</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="bedrooms_asc">Bedrooms: Fewer First</option>
+              <option value="bedrooms_desc">Bedrooms: More First</option>
+            </select>
+          </div>
+        </div>
+        <div id="listingsGrid" class="listings-grid">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-name">Marina Towers</div>
+          <div class="footer-brand-sub">Private Rental Program</div>
+          <p class="footer-brand-desc">An exclusive, curated rental program for Marina Towers owners and their guests.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="rentals.html">Find a Stay</a></li>
+            <li><a href="list-apartment.html">List Your Apartment</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Information</h4>
+          <ul>
+            <li><a href="#">How It Works</a></li>
+            <li><a href="#">Owner Services</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Marina Towers Private Rental Program.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/rentals.js"></script>
+</body>
+</html>

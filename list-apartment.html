@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>List Your Apartment — Marina Towers Private Rental Program</title>
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    .list-page { padding-top: var(--nav-height); }
+    .list-hero {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .list-hero::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 200px;
+      background: radial-gradient(ellipse, rgba(201,169,110,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .list-hero h1 {
+      font-size: clamp(36px, 5vw, 60px);
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+    .list-hero p {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .list-body { padding: 80px 0; }
+    .list-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) { .list-layout { grid-template-columns: 1fr; } }
+
+    /* Form Card */
+    .form-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .form-card-header {
+      padding: 32px 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-secondary);
+    }
+    .form-card-header h2 {
+      font-size: 26px;
+      font-weight: 400;
+      margin-bottom: 6px;
+    }
+    .form-card-header p {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .form-card-body { padding: 40px; }
+    .form-section {
+      margin-bottom: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+    .form-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .form-section-title {
+      font-family: var(--font-heading);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+    }
+    .form-section-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+
+    /* Service type cards */
+    .service-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .service-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+    .service-card:hover { border-color: var(--gold-border); }
+    .service-card.selected {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+    }
+    .service-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0; height: 0;
+    }
+    .service-card-check {
+      width: 18px; height: 18px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      margin-bottom: 14px;
+      transition: var(--transition);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .service-card.selected .service-card-check {
+      border-color: var(--gold);
+      background: var(--gold);
+    }
+    .service-card.selected .service-card-check::after {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #07090f;
+    }
+    .service-card-name { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    .service-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+    @media (max-width: 480px) { .service-cards { grid-template-columns: 1fr; } }
+
+    /* Sidebar */
+    .list-sidebar {
+      position: sticky;
+      top: calc(var(--nav-height) + 24px);
+    }
+    .sidebar-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      margin-bottom: 20px;
+    }
+    .sidebar-card h3 {
+      font-family: var(--font-heading);
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 16px;
+    }
+    .sidebar-list { list-style: none; display: flex; flex-direction: column; gap: 14px; }
+    .sidebar-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .sidebar-list li span:first-child { color: var(--gold); flex-shrink: 0; font-size: 15px; }
+    .sidebar-note {
+      background: rgba(201,169,110,0.05);
+      border: 1px solid var(--gold-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+    .sidebar-note strong { color: var(--gold); }
+
+    /* Progress steps */
+    .form-progress {
+      display: flex;
+      gap: 0;
+      margin-bottom: 48px;
+    }
+    .progress-step {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .progress-step::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+    }
+    .progress-step:last-child::before { display: none; }
+    .progress-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--bg-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      position: relative;
+      z-index: 1;
+      margin-bottom: 8px;
+    }
+    .progress-step.active .progress-dot {
+      border-color: var(--gold);
+      background: var(--gold-dim);
+      color: var(--gold);
+    }
+    .progress-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .progress-step.active .progress-label { color: var(--gold); }
+
+    #alertArea { margin-bottom: 24px; }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAVIGATION ══ -->
+  <nav class="nav scrolled" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-main">Marina Towers</span>
+        <span class="nav-logo-sub">Private Rental Program</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="rentals.html">Find a Stay</a></li>
+        <li><a href="list-apartment.html" class="nav-cta">List Your Apartment</a></li>
+      </ul>
+      <button class="nav-hamburger" id="navHamburger"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+  <div class="nav-mobile" id="navMobile">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="rentals.html">Find a Stay</a></li>
+      <li><a href="list-apartment.html">List Your Apartment</a></li>
+    </ul>
+  </div>
+
+  <div class="list-page">
+    <!-- ══ HERO ══ -->
+    <div class="list-hero">
+      <div class="container">
+        <p class="eyebrow">For Owners</p>
+        <div class="gold-line"></div>
+        <h1>List Your Apartment</h1>
+        <p>Submit your Marina Towers residence for inclusion in our exclusive private rental program. Every listing is personally reviewed before going live.</p>
+      </div>
+    </div>
+
+    <!-- ══ BODY ══ -->
+    <div class="list-body">
+      <div class="container">
+        <div class="list-layout">
+
+          <!-- FORM -->
+          <div>
+            <div id="alertArea"></div>
+
+            <div class="form-card" id="formCard">
+              <div class="form-card-header">
+                <h2>Owner Submission Form</h2>
+                <p>All fields marked <span style="color:var(--gold)">*</span> are required. Your listing will not go live until reviewed and approved.</p>
+              </div>
+              <div class="form-card-body">
+                <form id="listingForm" novalidate>
+
+                  <!-- 1. Owner Info -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">Owner Information</h3>
+                    <p class="form-section-desc">Your contact details for our review process.</p>
+                    <div class="form-grid" style="margin-bottom:20px">
+                      <div class="form-group">
+                        <label class="form-label">Full Name <span>*</span></label>
+                        <input type="text" class="form-input" id="ownerName" placeholder="Alexandra Reeves" required />
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Email Address <span>*</span></label>
+                        <input type="email" class="form-input" id="ownerEmail" placeholder="you@email.com" required />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Phone / WhatsApp <span>*</span></label>
+                      <input type="tel" class="form-input" id="ownerPhone" placeholder="+971 50 123 4567" required />
+                    </div>
+                  </div>
+
+                  <!-- 2. Apartment Details -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">Apartment Details</h3>
+                    <p class="form-section-desc">Tell us about your residence.</p>
+                    <div class="form-grid" style="margin-bottom:20px">
+                      <div class="form-group">
+                        <label class="form-label">Unit Number <span>*</span></label>
+                        <input type="text" class="form-input" id="unitNumber" placeholder="e.g. TA-3201" required />
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Tower <span>*</span></label>
+                        <select class="form-select" id="tower" required>
+                          <option value="">Select tower</option>
+                          <option value="Tower A">Tower A</option>
+                          <option value="Tower B">Tower B</option>
+                          <option value="Tower C">Tower C</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-grid" style="margin-bottom:20px">
+                      <div class="form-group">
+                        <label class="form-label">Apartment Type <span>*</span></label>
+                        <select class="form-select" id="apartmentType" required>
+                          <option value="">Select type</option>
+                          <option value="Studio">Studio</option>
+                          <option value="Residence">Residence</option>
+                          <option value="Penthouse">Penthouse</option>
+                          <option value="Sky Villa">Sky Villa</option>
+                          <option value="Duplex">Duplex</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Bedrooms <span>*</span></label>
+                        <select class="form-select" id="bedrooms" required>
+                          <option value="">Select</option>
+                          <option value="1">1 Bedroom</option>
+                          <option value="2">2 Bedrooms</option>
+                          <option value="3">3 Bedrooms</option>
+                          <option value="4">4 Bedrooms</option>
+                          <option value="5">5+ Bedrooms</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Maximum Number of Guests <span>*</span></label>
+                      <select class="form-select" id="maxGuests" required>
+                        <option value="">Select max guests</option>
+                        <option value="1">1 Guest</option>
+                        <option value="2">2 Guests</option>
+                        <option value="3">3 Guests</option>
+                        <option value="4">4 Guests</option>
+                        <option value="5">5 Guests</option>
+                        <option value="6">6 Guests</option>
+                        <option value="7">7 Guests</option>
+                        <option value="8">8 Guests</option>
+                        <option value="10">10 Guests</option>
+                        <option value="12">12+ Guests</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <!-- 3. Availability -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">Availability &amp; Pricing</h3>
+                    <p class="form-section-desc">When is your apartment available, and what are your pricing preferences?</p>
+                    <div class="form-grid" style="margin-bottom:20px">
+                      <div class="form-group">
+                        <label class="form-label">Available From <span>*</span></label>
+                        <input type="date" class="form-input" id="availableFrom" required />
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Available To <span>*</span></label>
+                        <input type="date" class="form-input" id="availableTo" required />
+                      </div>
+                    </div>
+                    <div class="form-grid" style="margin-bottom:20px">
+                      <div class="form-group">
+                        <label class="form-label">Minimum Stay (nights) <span>*</span></label>
+                        <select class="form-select" id="minimumStay" required>
+                          <option value="">Select</option>
+                          <option value="1">1 Night</option>
+                          <option value="2">2 Nights</option>
+                          <option value="3">3 Nights</option>
+                          <option value="4">4 Nights</option>
+                          <option value="5">5 Nights</option>
+                          <option value="7">7 Nights</option>
+                          <option value="14">14 Nights</option>
+                          <option value="30">30 Nights</option>
+                        </select>
+                      </div>
+                      <div class="form-group">
+                        <label class="form-label">Preferred Nightly Price (USD) <span>*</span></label>
+                        <input type="number" class="form-input" id="price" placeholder="e.g. 650" min="50" required />
+                        <p class="form-hint">Enter your preferred price in US Dollars per night.</p>
+                      </div>
+                    </div>
+                    <label class="form-check">
+                      <input type="checkbox" id="optimizePricing" />
+                      <span class="form-check-label">
+                        <strong>Optimize pricing for me</strong><br/>
+                        Allow our team to recommend competitive pricing based on demand and availability.
+                      </span>
+                    </label>
+                  </div>
+
+                  <!-- 4. Photos -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">Photos</h3>
+                    <p class="form-section-desc">Upload high-quality photos of your apartment. First photo will be used as the cover image.</p>
+                    <div class="file-upload-area" id="dropZone">
+                      <input type="file" id="photoInput" accept="image/*" multiple style="display:none" />
+                      <div class="file-upload-icon">📷</div>
+                      <p class="file-upload-text"><strong>Click to upload</strong> or drag and drop</p>
+                      <p class="file-upload-subtext">JPG, PNG, WEBP — Max 5MB per image. Recommended: at least 5 photos.</p>
+                    </div>
+                    <div class="file-preview-grid" id="previewGrid"></div>
+                  </div>
+
+                  <!-- 5. Additional Info -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">Additional Information</h3>
+                    <p class="form-section-desc">Any special rules, notes, or details about your residence.</p>
+                    <div class="form-group" style="margin-bottom:20px">
+                      <label class="form-label">Listing Title</label>
+                      <input type="text" class="form-input" id="listingTitle" placeholder="e.g. Oceanfront Penthouse Residence" />
+                      <p class="form-hint">Leave blank and our team will create a title for you.</p>
+                    </div>
+                    <div class="form-group" style="margin-bottom:20px">
+                      <label class="form-label">Description</label>
+                      <textarea class="form-textarea" id="listingDescription" rows="4" placeholder="Describe your apartment — views, highlights, atmosphere..."></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Notes / Special Rules</label>
+                      <textarea class="form-textarea" id="notes" rows="3" placeholder="e.g. No smoking. Pets not allowed. No events."></textarea>
+                    </div>
+                  </div>
+
+                  <!-- 6. Service Type -->
+                  <div class="form-section">
+                    <h3 class="form-section-title">Service Type <span style="color:var(--gold)">*</span></h3>
+                    <p class="form-section-desc">Choose how you'd like us to manage your listing.</p>
+                    <div class="service-cards">
+                      <label class="service-card selected" id="serviceCardBasic">
+                        <input type="radio" name="serviceType" value="basic" checked id="serviceBasic" />
+                        <div class="service-card-check"></div>
+                        <div class="service-card-name">Basic Listing</div>
+                        <div class="service-card-desc">We list your apartment. You handle all communications and check-in logistics directly with guests.</div>
+                      </label>
+                      <label class="service-card" id="serviceCardFull">
+                        <input type="radio" name="serviceType" value="full" id="serviceFull" />
+                        <div class="service-card-check"></div>
+                        <div class="service-card-name">Full Service Management</div>
+                        <div class="service-card-desc">We manage everything — guest communications, check-in, housekeeping coordination, and reporting.</div>
+                      </label>
+                    </div>
+                  </div>
+
+                  <!-- Submit -->
+                  <div style="text-align:center; padding-top: 8px;">
+                    <button type="submit" class="btn btn-primary btn-lg" id="submitBtn" style="width:100%; max-width:400px">
+                      Submit for Review
+                    </button>
+                    <p style="font-size:12px; color:var(--text-muted); margin-top:14px; line-height:1.6;">
+                      By submitting, you confirm that you are the owner or authorised agent of this Marina Towers residence.<br />
+                      Your listing will not go live until personally reviewed and approved.
+                    </p>
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+            <!-- Success State -->
+            <div id="successState" style="display:none">
+              <div class="form-card" style="text-align:center; padding: 80px 40px;">
+                <div style="font-size:56px; margin-bottom:24px">✦</div>
+                <p class="eyebrow">Submission Received</p>
+                <div class="gold-line"></div>
+                <h2 style="font-size:36px; font-weight:300; margin-bottom:16px">Thank You.</h2>
+                <p style="font-size:16px; color:var(--text-secondary); max-width:460px; margin:0 auto 32px; line-height:1.7">
+                  Your apartment has been submitted for review. We will carefully review your listing and contact you within 24–48 hours.
+                </p>
+                <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap">
+                  <a href="index.html" class="btn btn-gold-outline">Return Home</a>
+                  <a href="rentals.html" class="btn btn-outline">Browse Residences</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- SIDEBAR -->
+          <div class="list-sidebar">
+            <div class="sidebar-card">
+              <h3>What Happens Next</h3>
+              <ul class="sidebar-list">
+                <li>
+                  <span>01</span>
+                  <span>Our team reviews your submission — typically within 24–48 hours.</span>
+                </li>
+                <li>
+                  <span>02</span>
+                  <span>We may contact you for additional photos or information.</span>
+                </li>
+                <li>
+                  <span>03</span>
+                  <span>Upon approval, your listing goes live in the private program.</span>
+                </li>
+                <li>
+                  <span>04</span>
+                  <span>You will be notified of every booking request for your approval.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="sidebar-note">
+              <strong>Private Program Only</strong><br/>
+              Your apartment will never be listed on public platforms. This program is exclusively for Marina Towers owners and their verified guests.
+            </div>
+            <div class="sidebar-card" style="margin-top:20px">
+              <h3>Need Help?</h3>
+              <p style="font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:16px">
+                Our team is available to assist with your submission, photos, or any questions about the program.
+              </p>
+              <a href="mailto:rentals@marinатowers.com" class="btn btn-gold-outline btn-sm" style="width:100%">Contact Us</a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-name">Marina Towers</div>
+          <div class="footer-brand-sub">Private Rental Program</div>
+          <p class="footer-brand-desc">An exclusive, curated rental program for Marina Towers owners and their guests.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="rentals.html">Find a Stay</a></li>
+            <li><a href="list-apartment.html">List Your Apartment</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Information</h4>
+          <ul>
+            <li><a href="#">How It Works</a></li>
+            <li><a href="#">Owner Services</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Marina Towers Private Rental Program.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/list.js"></script>
+</body>
+</html>
