@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Marina Towers — Private Rental Program</title>
+  <meta name="description" content="Exclusive private rentals for Marina Towers owners and guests." />
+  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+    /* ── Hero ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(7,9,15,0.3) 0%, rgba(7,9,15,0.65) 60%, rgba(7,9,15,1) 100%),
+        url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=1800&q=85') center/cover no-repeat;
+      z-index: 0;
+    }
+    .hero-particles {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 20% 30%, rgba(201,169,110,0.3) 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 70%, rgba(201,169,110,0.2) 0%, transparent 100%),
+        radial-gradient(1px 1px at 50% 50%, rgba(201,169,110,0.15) 0%, transparent 100%);
+      z-index: 1;
+    }
+    .hero-glow {
+      position: absolute;
+      top: 40%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px;
+      height: 500px;
+      background: radial-gradient(ellipse, rgba(201,169,110,0.06) 0%, transparent 65%);
+      z-index: 1;
+      pointer-events: none;
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 32px;
+      padding-top: var(--nav-height);
+      width: 100%;
+    }
+    .hero-inner {
+      max-width: 680px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(201,169,110,0.1);
+      border: 1px solid rgba(201,169,110,0.2);
+      padding: 8px 18px;
+      border-radius: 40px;
+      margin-bottom: 36px;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.4; }
+    }
+    .hero-badge-text {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+    .hero-title {
+      font-family: var(--font-heading);
+      font-size: clamp(44px, 7vw, 88px);
+      font-weight: 300;
+      line-height: 1.07;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+      margin-bottom: 28px;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+    .hero-subtitle {
+      font-size: 17px;
+      color: rgba(240,237,232,0.72);
+      line-height: 1.75;
+      max-width: 480px;
+      margin-bottom: 48px;
+      font-weight: 300;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: rgba(201,169,110,0.5);
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+    }
+    .hero-scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, rgba(201,169,110,0.6), transparent);
+      animation: scrollLine 2s ease-in-out infinite;
+    }
+    @keyframes scrollLine {
+      0%, 100% { opacity: 1; transform: scaleY(1); transform-origin: top; }
+      50%       { opacity: 0.4; transform: scaleY(0.6); }
+    }
+    .hero-stats {
+      position: absolute;
+      right: 80px;
+      bottom: 120px;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .hero-stat {
+      text-align: right;
+    }
+    .hero-stat-num {
+      font-family: var(--font-heading);
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .hero-stat-label {
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(201,169,110,0.6);
+      margin-top: 4px;
+    }
+
+    /* ── Feature Strip ── */
+    .feature-strip {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 28px 0;
+    }
+    .feature-strip-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 32px;
+    }
+    .feature-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex: 1;
+    }
+    .feature-icon {
+      font-size: 22px;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .feature-text strong {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .feature-text span {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .feature-divider {
+      width: 1px;
+      height: 40px;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+    @media (max-width: 900px) {
+      .feature-strip-inner { flex-direction: column; align-items: flex-start; }
+      .feature-divider { display: none; }
+      .hero-stats { display: none; }
+    }
+
+    /* ── How It Works ── */
+    .hiw-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .hiw-step {
+      background: var(--bg-card);
+      padding: 48px 40px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .hiw-step:hover { background: var(--bg-card-hover); }
+    .hiw-num {
+      font-family: var(--font-heading);
+      font-size: 72px;
+      font-weight: 300;
+      color: rgba(201,169,110,0.1);
+      line-height: 1;
+      position: absolute;
+      top: 24px;
+      right: 28px;
+    }
+    .hiw-icon {
+      font-size: 28px;
+      color: var(--gold);
+      margin-bottom: 20px;
+    }
+    .hiw-title {
+      font-family: var(--font-heading);
+      font-size: 22px;
+      font-weight: 400;
+      margin-bottom: 12px;
+    }
+    .hiw-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+    @media (max-width: 768px) {
+      .hiw-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── Featured Listings ── */
+    .listings-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 28px;
+    }
+    @media (max-width: 1024px) { .listings-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 640px)  { .listings-grid { grid-template-columns: 1fr; } }
+
+    /* ── CTA Block ── */
+    .cta-block {
+      background: var(--bg-card);
+      border: 1px solid var(--border-gold);
+      border-radius: var(--radius-lg);
+      padding: 80px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-block::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(201,169,110,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .cta-block h2 {
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 300;
+      margin-bottom: 16px;
+    }
+    .cta-block p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      max-width: 460px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .cta-block-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    @media (max-width: 768px) { .cta-block { padding: 48px 28px; } }
+
+    /* ── Testimonial ── */
+    .testimonials { background: var(--bg-secondary); }
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .testimonial-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 36px 32px;
+    }
+    .testimonial-stars { color: var(--gold); font-size: 14px; letter-spacing: 2px; margin-bottom: 16px; }
+    .testimonial-text { font-family: var(--font-heading); font-size: 17px; font-weight: 300; font-style: italic; color: var(--text-primary); line-height: 1.6; margin-bottom: 24px; }
+    .testimonial-author { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+    .testimonial-author strong { color: var(--gold); display: block; margin-bottom: 2px; font-size: 13px; }
+    @media (max-width: 900px) { .testimonials-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .testimonials-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <!-- ══ NAVIGATION ══ -->
+  <nav class="nav" id="mainNav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <span class="nav-logo-main">Marina Towers</span>
+        <span class="nav-logo-sub">Private Rental Program</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="rentals.html">Find a Stay</a></li>
+        <li><a href="list-apartment.html" class="nav-cta">List Your Apartment</a></li>
+      </ul>
+      <button class="nav-hamburger" id="navHamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+  <div class="nav-mobile" id="navMobile">
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="rentals.html">Find a Stay</a></li>
+      <li><a href="list-apartment.html">List Your Apartment</a></li>
+    </ul>
+  </div>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-particles"></div>
+    <div class="hero-glow"></div>
+
+    <div class="hero-content">
+      <div class="hero-inner">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          <span class="hero-badge-text">Exclusive — By Invitation</span>
+        </div>
+        <h1 class="hero-title">
+          Marina Towers<br /><em>Private Rental</em><br />Program
+        </h1>
+        <p class="hero-subtitle">
+          Exclusive private residences for Marina Towers owners and their guests. Every stay personally curated and approved.
+        </p>
+        <div class="hero-actions">
+          <a href="rentals.html" class="btn btn-primary btn-lg">Find a Stay</a>
+          <a href="list-apartment.html" class="btn btn-outline btn-lg">List Your Apartment</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="heroStatListings">—</div>
+        <div class="hero-stat-label">Residences</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">3</div>
+        <div class="hero-stat-label">Towers</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">100%</div>
+        <div class="hero-stat-label">Verified</div>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <div class="hero-scroll-line"></div>
+      <span>Scroll</span>
+    </div>
+  </section>
+
+  <!-- ══ FEATURE STRIP ══ -->
+  <div class="feature-strip">
+    <div class="feature-strip-inner">
+      <div class="feature-item">
+        <span class="feature-icon">🏛</span>
+        <div class="feature-text">
+          <strong>Verified Residences Only</strong>
+          <span>Every listing personally reviewed and approved</span>
+        </div>
+      </div>
+      <div class="feature-divider"></div>
+      <div class="feature-item">
+        <span class="feature-icon">🔒</span>
+        <div class="feature-text">
+          <strong>Private & Exclusive</strong>
+          <span>Not an open marketplace — by approval only</span>
+        </div>
+      </div>
+      <div class="feature-divider"></div>
+      <div class="feature-item">
+        <span class="feature-icon">✦</span>
+        <div class="feature-text">
+          <strong>White-Glove Service</strong>
+          <span>Dedicated support for every stay</span>
+        </div>
+      </div>
+      <div class="feature-divider"></div>
+      <div class="feature-item">
+        <span class="feature-icon">🌊</span>
+        <div class="feature-text">
+          <strong>Ocean &amp; Marina Views</strong>
+          <span>Iconic residences with world-class vistas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ HOW IT WORKS ══ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-header" data-reveal>
+        <p class="eyebrow">The Process</p>
+        <div class="gold-line"></div>
+        <h2>A Curated Experience</h2>
+        <p>Every reservation is personally reviewed. Nothing goes live without our direct approval.</p>
+      </div>
+      <div class="hiw-grid" data-reveal>
+        <div class="hiw-step">
+          <div class="hiw-num">01</div>
+          <div class="hiw-icon">🔍</div>
+          <h3 class="hiw-title">Browse Residences</h3>
+          <p class="hiw-desc">Explore our curated collection of Marina Towers residences — each hand-selected and personally verified by our team.</p>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-num">02</div>
+          <div class="hiw-icon">📋</div>
+          <h3 class="hiw-title">Request Your Stay</h3>
+          <p class="hiw-desc">Submit a booking request with your preferred dates and details. This is request-to-book — not instant. We review every reservation personally.</p>
+        </div>
+        <div class="hiw-step">
+          <div class="hiw-num">03</div>
+          <div class="hiw-icon">✓</div>
+          <h3 class="hiw-title">Confirmed &amp; Welcomed</h3>
+          <p class="hiw-desc">Once approved, we'll contact you directly to confirm your stay and arrange a seamless arrival experience at Marina Towers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FEATURED LISTINGS ══ -->
+  <section class="section" style="padding-top: 0;">
+    <div class="container">
+      <div class="section-header" data-reveal>
+        <p class="eyebrow">Available Now</p>
+        <div class="gold-line"></div>
+        <h2>Featured Residences</h2>
+        <p>A selection of our currently available Marina Towers residences.</p>
+      </div>
+      <div class="listings-grid" id="featuredListings">
+        <!-- Injected by JS -->
+      </div>
+      <div style="text-align:center; margin-top: 48px;" data-reveal>
+        <a href="rentals.html" class="btn btn-gold-outline btn-lg">View All Residences</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ TESTIMONIALS ══ -->
+  <section class="section testimonials">
+    <div class="container">
+      <div class="section-header" data-reveal>
+        <p class="eyebrow">Guest Experiences</p>
+        <div class="gold-line"></div>
+        <h2>What Our Guests Say</h2>
+      </div>
+      <div class="testimonials-grid" data-reveal>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"An utterly seamless experience. The apartment exceeded every expectation — we felt like true residents of Marina Towers from the moment we arrived."</p>
+          <div class="testimonial-author">
+            <strong>James &amp; Caroline W.</strong>
+            Tower A Penthouse, 7 nights
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"The personal attention and care taken with every detail was remarkable. Not a generic rental — a genuinely exclusive, private experience."</p>
+          <div class="testimonial-author">
+            <strong>Nadia H.</strong>
+            Tower B Garden Suite, 4 nights
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"Waking up to the ocean view from the 35th floor was something we'll never forget. The booking process was effortless and professional."</p>
+          <div class="testimonial-author">
+            <strong>David &amp; Amara S.</strong>
+            Tower A Sky Residence, 10 nights
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ CTA BLOCK ══ -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-block" data-reveal>
+        <p class="eyebrow">Own a Residence?</p>
+        <div class="gold-line"></div>
+        <h2>List Your Apartment</h2>
+        <p>Share your Marina Towers residence with a select community of discerning guests. We handle the details — you enjoy the returns.</p>
+        <div class="cta-block-actions">
+          <a href="list-apartment.html" class="btn btn-primary btn-lg">Submit Your Listing</a>
+          <a href="rentals.html" class="btn btn-outline btn-lg">Browse First</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ FOOTER ══ -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-top">
+        <div>
+          <div class="footer-brand-name">Marina Towers</div>
+          <div class="footer-brand-sub">Private Rental Program</div>
+          <p class="footer-brand-desc">An exclusive, curated rental program for Marina Towers owners and their guests. Every listing approved, every stay assured.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="rentals.html">Find a Stay</a></li>
+            <li><a href="list-apartment.html">List Your Apartment</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Information</h4>
+          <ul>
+            <li><a href="#">How It Works</a></li>
+            <li><a href="#">Owner Services</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2024 Marina Towers Private Rental Program. All rights reserved.</span>
+        <span>Exclusively for Marina Towers owners &amp; guests.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    // Featured listings
+    (function loadFeatured() {
+      const grid = document.getElementById('featuredListings');
+      const stat = document.getElementById('heroStatListings');
+      const listings = DB.getApprovedListings().slice(0, 3);
+      stat.textContent = DB.getApprovedListings().length;
+      if (!listings.length) {
+        grid.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🏛</div><h3>No residences yet</h3><p>Check back soon.</p></div>';
+        return;
+      }
+      grid.innerHTML = listings.map(l => renderCard(l)).join('');
+    })();
+
+    function renderCard(l) {
+      const img = l.photos && l.photos[0]
+        ? `<img class="card-image" src="${Utils.escapeHtml(l.photos[0])}" alt="${Utils.escapeHtml(l.title)}" loading="lazy" />`
+        : `<div class="card-image-placeholder">🏛</div>`;
+      return `
+        <div class="card" data-reveal>
+          ${img}
+          <div class="card-body">
+            <div class="card-tower">${Utils.escapeHtml(l.tower || '')}</div>
+            <h3 class="card-title">${Utils.escapeHtml(l.title)}</h3>
+            <p class="card-description">${Utils.escapeHtml(l.description || '')}</p>
+            <div class="card-meta">
+              <span>🛏 ${l.bedrooms} Bed${l.bedrooms !== 1 ? 's' : ''}</span>
+              <span>👥 Up to ${l.maxGuests} guests</span>
+              <span>🌙 ${l.minimumStay}+ nights</span>
+            </div>
+            <div class="card-price">
+              <span class="card-price-amount">${Utils.formatCurrency(l.price)}</span>
+              <span class="card-price-unit">/ night</span>
+            </div>
+            <div class="card-footer">
+              <a href="property.html?id=${l.id}" class="btn btn-gold-outline btn-sm">View Details</a>
+            </div>
+          </div>
+        </div>`;
+    }
+  </script>
+</body>
+</html>
