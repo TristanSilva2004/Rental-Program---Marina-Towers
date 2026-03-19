@@ -1,82 +1,63 @@
-import fs from 'fs';
-import path from 'path';
 import { Property, ContactInquiry } from './types';
 
-const DATA_DIR = path.join(process.cwd(), 'data');
-const PROPERTIES_FILE = path.join(DATA_DIR, 'properties.json');
-const INQUIRIES_FILE = path.join(DATA_DIR, 'inquiries.json');
+// In-memory store using globalThis so state persists across
+// hot-module reloads in dev and within a warm serverless container.
+declare global {
+  // eslint-disable-next-line no-var
+  var __marina_properties: Property[] | undefined;
+  // eslint-disable-next-line no-var
+  var __marina_inquiries: ContactInquiry[] | undefined;
+}
 
-function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+function getStore() {
+  if (!globalThis.__marina_properties) {
+    globalThis.__marina_properties = getSeedProperties();
   }
+  if (!globalThis.__marina_inquiries) {
+    globalThis.__marina_inquiries = [];
+  }
+  return {
+    properties: globalThis.__marina_properties,
+    inquiries: globalThis.__marina_inquiries,
+  };
 }
 
 export function getProperties(): Property[] {
-  ensureDataDir();
-  if (!fs.existsSync(PROPERTIES_FILE)) {
-    const seed = getSeedProperties();
-    fs.writeFileSync(PROPERTIES_FILE, JSON.stringify(seed, null, 2));
-    return seed;
-  }
-  const raw = fs.readFileSync(PROPERTIES_FILE, 'utf-8');
-  return JSON.parse(raw);
-}
-
-export function saveProperties(properties: Property[]) {
-  ensureDataDir();
-  fs.writeFileSync(PROPERTIES_FILE, JSON.stringify(properties, null, 2));
+  return getStore().properties;
 }
 
 export function addProperty(property: Property) {
-  const properties = getProperties();
-  properties.push(property);
-  saveProperties(properties);
+  getStore().properties.push(property);
 }
 
 export function updatePropertyStatus(id: string, status: 'pending' | 'approved' | 'rejected') {
-  const properties = getProperties();
-  const idx = properties.findIndex(p => p.id === id);
-  if (idx !== -1) {
-    properties[idx].status = status;
-    saveProperties(properties);
-    return properties[idx];
+  const properties = getStore().properties;
+  const item = properties.find(p => p.id === id);
+  if (item) {
+    item.status = status;
+    return item;
   }
   return null;
 }
 
 export function incrementViews(id: string) {
-  const properties = getProperties();
-  const idx = properties.findIndex(p => p.id === id);
-  if (idx !== -1) {
-    properties[idx].views = (properties[idx].views || 0) + 1;
-    saveProperties(properties);
-  }
+  const item = getStore().properties.find(p => p.id === id);
+  if (item) item.views = (item.views || 0) + 1;
 }
 
 export function getInquiries(): ContactInquiry[] {
-  ensureDataDir();
-  if (!fs.existsSync(INQUIRIES_FILE)) {
-    fs.writeFileSync(INQUIRIES_FILE, JSON.stringify([], null, 2));
-    return [];
-  }
-  const raw = fs.readFileSync(INQUIRIES_FILE, 'utf-8');
-  return JSON.parse(raw);
+  return getStore().inquiries;
 }
 
 export function addInquiry(inquiry: ContactInquiry) {
-  const inquiries = getInquiries();
-  inquiries.push(inquiry);
-  fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(inquiries, null, 2));
+  getStore().inquiries.push(inquiry);
 }
 
 export function updateInquiryStatus(id: string, status: 'new' | 'contacted' | 'closed') {
-  const inquiries = getInquiries();
-  const idx = inquiries.findIndex(i => i.id === id);
-  if (idx !== -1) {
-    inquiries[idx].status = status;
-    fs.writeFileSync(INQUIRIES_FILE, JSON.stringify(inquiries, null, 2));
-    return inquiries[idx];
+  const item = getStore().inquiries.find(i => i.id === id);
+  if (item) {
+    item.status = status;
+    return item;
   }
   return null;
 }
@@ -93,7 +74,7 @@ function getSeedProperties(): Property[] {
       sqft: 2400,
       pricePerNight: 850,
       pricePerMonth: 18000,
-      description: 'A breathtaking sky suite on the 45th floor of Tower A offering 270-degree panoramic views of the marina, bay, and city skyline. This meticulously furnished residence features floor-to-ceiling windows, Italian marble finishes, and a chef\'s kitchen with premium appliances. The master suite includes a spa-inspired bathroom with a soaking tub overlooking the water.',
+      description: "A breathtaking sky suite on the 45th floor of Tower A offering 270-degree panoramic views of the marina, bay, and city skyline. This meticulously furnished residence features floor-to-ceiling windows, Italian marble finishes, and a chef's kitchen with premium appliances. The master suite includes a spa-inspired bathroom with a soaking tub overlooking the water.",
       amenities: ['Concierge', 'Valet Parking', 'Pool & Spa', 'Fitness Center', 'Private Terrace', 'Smart Home System', 'Wine Cellar', 'Panoramic Views'],
       images: [
         'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
@@ -103,14 +84,14 @@ function getSeedProperties(): Property[] {
       ownerName: 'Jonathan Harrington',
       ownerEmail: 'j.harrington@email.com',
       ownerPhone: '+1 (305) 555-0101',
-      availableFrom: '2024-02-01',
-      availableTo: '2024-12-31',
+      availableFrom: '2026-02-01',
+      availableTo: '2026-12-31',
       minimumStay: 7,
       petFriendly: false,
       parkingIncluded: true,
       furnished: true,
       status: 'approved',
-      submittedAt: '2024-01-10T10:00:00Z',
+      submittedAt: '2026-01-10T10:00:00Z',
       views: 234,
     },
     {
@@ -133,14 +114,14 @@ function getSeedProperties(): Property[] {
       ownerName: 'Victoria Sinclair',
       ownerEmail: 'vsinclair@privatemail.com',
       ownerPhone: '+1 (305) 555-0202',
-      availableFrom: '2024-03-01',
-      availableTo: '2025-03-01',
+      availableFrom: '2026-03-01',
+      availableTo: '2027-03-01',
       minimumStay: 30,
       petFriendly: false,
       parkingIncluded: true,
       furnished: true,
       status: 'approved',
-      submittedAt: '2024-01-15T09:30:00Z',
+      submittedAt: '2026-01-15T09:30:00Z',
       views: 412,
     },
     {
@@ -163,14 +144,14 @@ function getSeedProperties(): Property[] {
       ownerName: 'Michael Chen',
       ownerEmail: 'm.chen@invest.com',
       ownerPhone: '+1 (305) 555-0303',
-      availableFrom: '2024-02-15',
-      availableTo: '2024-11-30',
+      availableFrom: '2026-02-15',
+      availableTo: '2026-11-30',
       minimumStay: 7,
       petFriendly: true,
       parkingIncluded: true,
       furnished: true,
       status: 'approved',
-      submittedAt: '2024-01-20T14:00:00Z',
+      submittedAt: '2026-01-20T14:00:00Z',
       views: 187,
     },
     {
@@ -193,14 +174,14 @@ function getSeedProperties(): Property[] {
       ownerName: 'Sarah Westbrook',
       ownerEmail: 's.westbrook@email.com',
       ownerPhone: '+1 (305) 555-0404',
-      availableFrom: '2024-02-01',
-      availableTo: '2024-08-31',
+      availableFrom: '2026-02-01',
+      availableTo: '2026-08-31',
       minimumStay: 3,
       petFriendly: false,
       parkingIncluded: true,
       furnished: true,
       status: 'approved',
-      submittedAt: '2024-01-22T11:00:00Z',
+      submittedAt: '2026-01-22T11:00:00Z',
       views: 156,
     },
     {
@@ -223,14 +204,14 @@ function getSeedProperties(): Property[] {
       ownerName: 'Robert & Diana Ashford',
       ownerEmail: 'ashford.rentals@email.com',
       ownerPhone: '+1 (305) 555-0505',
-      availableFrom: '2024-04-01',
-      availableTo: '2025-04-01',
+      availableFrom: '2026-04-01',
+      availableTo: '2027-04-01',
       minimumStay: 14,
       petFriendly: true,
       parkingIncluded: true,
       furnished: true,
       status: 'pending',
-      submittedAt: '2024-01-28T16:30:00Z',
+      submittedAt: '2026-01-28T16:30:00Z',
       views: 89,
     },
   ];
