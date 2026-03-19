@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #C9A84C;
+  --color-gold-light: #E8C97A;
+  --color-gold-dark: #A07830;
+  --color-navy: #0B1628;
+  --color-navy-light: #152238;
+  --color-cream: #F9F7F2;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background-color: var(--color-cream);
+    color: #1a1a2e;
+  }
+}
+
+@layer utilities {
+  .text-gold {
+    color: var(--color-gold);
+  }
+  .bg-gold {
+    background-color: var(--color-gold);
+  }
+  .bg-navy {
+    background-color: var(--color-navy);
+  }
+  .bg-navy-light {
+    background-color: var(--color-navy-light);
+  }
+  .border-gold {
+    border-color: var(--color-gold);
+  }
+  .bg-cream {
+    background-color: var(--color-cream);
+  }
+  .gradient-gold {
+    background: linear-gradient(135deg, #C9A84C 0%, #E8C97A 50%, #A07830 100%);
+  }
+  .gradient-navy {
+    background: linear-gradient(180deg, #0B1628 0%, #152238 100%);
+  }
+  .text-shadow-gold {
+    text-shadow: 0 0 40px rgba(201, 168, 76, 0.3);
+  }
+}

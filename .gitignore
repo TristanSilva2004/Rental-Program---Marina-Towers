@@ -1,0 +1,5 @@
+.next/
+node_modules/
+data/properties.json
+data/inquiries.json
+.env*
